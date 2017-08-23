@@ -5,13 +5,13 @@
   "version": "1.7.6",
   "description": "View useful information about your Atom installation.",
   "keywords": [],
-  "repository": "https://github.com/atom/about",
+  "repository": "https://github.com/DavidLemarier/about",
   "license": "MIT",
   "scripts": {
     "lint": "standard"
   },
   "engines": {
-    "atom": ">=1.7 <2.0.0"
+    "atom": "*"
   },
   "dependencies": {
     "etch": "0.9.0"
