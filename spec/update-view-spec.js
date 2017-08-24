@@ -23,17 +23,17 @@ describe('UpdateView', () => {
       return storage[key]
     })
 
-    workspaceElement = atom.views.getView(atom.workspace)
-    await atom.packages.activatePackage('about')
-    spyOn(atom.autoUpdater, 'getState').andReturn('idle')
-    spyOn(atom.autoUpdater, 'checkForUpdate')
-    spyOn(atom.autoUpdater, 'platformSupportsUpdates').andReturn(true)
+    workspaceElement = soldat.views.getView(soldat.workspace)
+    await soldat.packages.activatePackage('about')
+    spyOn(soldat.autoUpdater, 'getState').andReturn('idle')
+    spyOn(soldat.autoUpdater, 'checkForUpdate')
+    spyOn(soldat.autoUpdater, 'platformSupportsUpdates').andReturn(true)
   })
 
   describe('when the About page is open', () => {
     beforeEach(async () => {
       jasmine.attachToDOM(workspaceElement)
-      await atom.workspace.open('atom://about')
+      await soldat.workspace.open('soldat://about')
       aboutElement = workspaceElement.querySelector('.about')
       updateManager = main.model.state.updateManager
       scheduler = AboutView.getScheduler()
@@ -41,7 +41,7 @@ describe('UpdateView', () => {
 
     describe('when the updates are not supported by the platform', () => {
       it('hides the auto update UI', async () => {
-        atom.autoUpdater.platformSupportsUpdates.andReturn(false)
+        soldat.autoUpdater.platformSupportsUpdates.andReturn(false)
         updateManager.resetState()
         await scheduler.getNextUpdatePromise()
         expect(aboutElement.querySelector('.about-updates')).not.toBeVisible()
@@ -50,7 +50,7 @@ describe('UpdateView', () => {
 
     describe('when updates are supported by the platform', () => {
       beforeEach(async () => {
-        atom.autoUpdater.platformSupportsUpdates.andReturn(true)
+        soldat.autoUpdater.platformSupportsUpdates.andReturn(true)
         updateManager.resetState()
         await scheduler.getNextUpdatePromise()
       })
@@ -81,7 +81,7 @@ describe('UpdateView', () => {
         expect(aboutElement.querySelector('.app-up-to-date')).not.toBeVisible()
         expect(aboutElement.querySelector('.app-checking-for-updates')).toBeVisible()
 
-        spyOn(atom.autoUpdater, 'getErrorMessage').andReturn('an error message')
+        spyOn(soldat.autoUpdater, 'getErrorMessage').andReturn('an error message')
         MockUpdater.updateError()
         await scheduler.getNextUpdatePromise()
         expect(aboutElement.querySelector('.app-update-error')).toBeVisible()
@@ -138,21 +138,21 @@ describe('UpdateView', () => {
       it('executes checkForUpdate() when the check for update button is clicked', () => {
         let button = aboutElement.querySelector('.about-update-action-button')
         button.click()
-        expect(atom.autoUpdater.checkForUpdate).toHaveBeenCalled()
+        expect(soldat.autoUpdater.checkForUpdate).toHaveBeenCalled()
       })
 
       it('executes restartAndInstallUpdate() when the restart and install button is clicked', async () => {
-        spyOn(atom.autoUpdater, 'restartAndInstallUpdate')
+        spyOn(soldat.autoUpdater, 'restartAndInstallUpdate')
         MockUpdater.finishDownloadingUpdate(42)
         await scheduler.getNextUpdatePromise()
 
         let button = aboutElement.querySelector('.about-update-action-button')
         button.click()
-        expect(atom.autoUpdater.restartAndInstallUpdate).toHaveBeenCalled()
+        expect(soldat.autoUpdater.restartAndInstallUpdate).toHaveBeenCalled()
       })
 
-      it("starts in the same state as atom's AutoUpdateManager", async () => {
-        atom.autoUpdater.getState.andReturn('downloading')
+      it("starts in the same state as soldat's AutoUpdateManager", async () => {
+        soldat.autoUpdater.getState.andReturn('downloading')
         updateManager.resetState()
 
         await scheduler.getNextUpdatePromise()
@@ -164,16 +164,16 @@ describe('UpdateView', () => {
 
       describe('when core.automaticallyUpdate is toggled', () => {
         beforeEach(async () => {
-          expect(atom.config.get('core.automaticallyUpdate')).toBe(true)
-          atom.autoUpdater.checkForUpdate.reset()
+          expect(soldat.config.get('core.automaticallyUpdate')).toBe(true)
+          soldat.autoUpdater.checkForUpdate.reset()
         })
 
         it('shows the auto update UI', async () => {
           expect(aboutElement.querySelector('.about-auto-updates input').checked).toBe(true)
           expect(aboutElement.querySelector('.about-default-update-message')).toBeVisible()
-          expect(aboutElement.querySelector('.about-default-update-message').textContent).toBe('Atom will check for updates automatically')
+          expect(aboutElement.querySelector('.about-default-update-message').textContent).toBe('Soldat will check for updates automatically')
 
-          atom.config.set('core.automaticallyUpdate', false)
+          soldat.config.set('core.automaticallyUpdate', false)
           await scheduler.getNextUpdatePromise()
 
           expect(aboutElement.querySelector('.about-auto-updates input').checked).toBe(false)
@@ -187,7 +187,7 @@ describe('UpdateView', () => {
           aboutElement.querySelector('.about-auto-updates input').click()
           await scheduler.getNextUpdatePromise()
 
-          expect(atom.config.get('core.automaticallyUpdate')).toBe(false)
+          expect(soldat.config.get('core.automaticallyUpdate')).toBe(false)
           expect(aboutElement.querySelector('.about-auto-updates input').checked).toBe(false)
           expect(aboutElement.querySelector('.about-default-update-message')).toBeVisible()
           expect(aboutElement.querySelector('.about-default-update-message').textContent).toBe('Automatic updates are disabled please check manually')
@@ -195,10 +195,10 @@ describe('UpdateView', () => {
           aboutElement.querySelector('.about-auto-updates input').click()
           await scheduler.getNextUpdatePromise()
 
-          expect(atom.config.get('core.automaticallyUpdate')).toBe(true)
+          expect(soldat.config.get('core.automaticallyUpdate')).toBe(true)
           expect(aboutElement.querySelector('.about-auto-updates input').checked).toBe(true)
           expect(aboutElement.querySelector('.about-default-update-message')).toBeVisible()
-          expect(aboutElement.querySelector('.about-default-update-message').textContent).toBe('Atom will check for updates automatically')
+          expect(aboutElement.querySelector('.about-default-update-message').textContent).toBe('Soldat will check for updates automatically')
         })
 
         describe('checking for updates', function () {
@@ -207,7 +207,7 @@ describe('UpdateView', () => {
           })
 
           it('checks for update when the about page is shown', () => {
-            expect(atom.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
+            expect(soldat.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
 
             this.updateView = new UpdateView({
               updateManager: updateManager,
@@ -215,13 +215,13 @@ describe('UpdateView', () => {
               viewUpdateReleaseNotes: () => {}
             })
 
-            expect(atom.autoUpdater.checkForUpdate).toHaveBeenCalled()
+            expect(soldat.autoUpdater.checkForUpdate).toHaveBeenCalled()
           })
 
           it('does not check for update when the about page is shown and the update manager is not in the idle state', () => {
-            atom.autoUpdater.getState.andReturn('downloading')
+            soldat.autoUpdater.getState.andReturn('downloading')
             updateManager.resetState()
-            expect(atom.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
+            expect(soldat.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
 
             this.updateView = new UpdateView({
               updateManager: updateManager,
@@ -229,12 +229,12 @@ describe('UpdateView', () => {
               viewUpdateReleaseNotes: () => {}
             })
 
-            expect(atom.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
+            expect(soldat.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
           })
 
           it('does not check for update when the about page is shown and auto updates are turned off', () => {
-            atom.config.set('core.automaticallyUpdate', false)
-            expect(atom.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
+            soldat.config.set('core.automaticallyUpdate', false)
+            expect(soldat.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
 
             this.updateView = new UpdateView({
               updateManager: updateManager,
@@ -242,7 +242,7 @@ describe('UpdateView', () => {
               viewUpdateReleaseNotes: () => {}
             })
 
-            expect(atom.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
+            expect(soldat.autoUpdater.checkForUpdate).not.toHaveBeenCalled()
           })
         })
       })
@@ -254,7 +254,7 @@ describe('UpdateView', () => {
       MockUpdater.finishDownloadingUpdate(42)
 
       jasmine.attachToDOM(workspaceElement)
-      await atom.workspace.open('atom://about')
+      await soldat.workspace.open('soldat://about')
       aboutElement = workspaceElement.querySelector('.about')
       updateManager = main.model.state.updateManager
       scheduler = AboutView.getScheduler()

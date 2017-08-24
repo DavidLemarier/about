@@ -15,21 +15,21 @@ describe('About', () => {
       return storage[key]
     })
 
-    workspaceElement = atom.views.getView(atom.workspace)
-    await atom.packages.activatePackage('about')
+    workspaceElement = soldat.views.getView(soldat.workspace)
+    await soldat.packages.activatePackage('about')
   })
 
   it('deserializes correctly', () => {
-    let deserializedAboutView = atom.deserializers.deserialize({
+    let deserializedAboutView = soldat.deserializers.deserialize({
       deserializer: 'AboutView',
-      uri: 'atom://about'
+      uri: 'soldat://about'
     })
 
     expect(deserializedAboutView).toBeTruthy()
   })
 
-  describe('when the about:about-atom command is triggered', () => {
-    it('shows the About Atom view', async () => {
+  describe('when the about:about-soldat command is triggered', () => {
+    it('shows the About Soldat view', async () => {
       // Attaching the workspaceElement to the DOM is required to allow the
       // `toBeVisible()` matchers to work. Anything testing visibility or focus
       // requires that the workspaceElement is on the DOM. Tests that attach the
@@ -37,7 +37,7 @@ describe('About', () => {
       jasmine.attachToDOM(workspaceElement)
 
       expect(workspaceElement.querySelector('.about')).not.toExist()
-      await atom.workspace.open('atom://about')
+      await soldat.workspace.open('soldat://about')
 
       let aboutElement = workspaceElement.querySelector('.about')
       expect(aboutElement).toBeVisible()
@@ -46,12 +46,12 @@ describe('About', () => {
 
   describe('when the version number is clicked', () => {
     it('copies the version number to the clipboard', async () => {
-      await atom.workspace.open('atom://about')
+      await soldat.workspace.open('soldat://about')
 
       let aboutElement = workspaceElement.querySelector('.about')
       let versionContainer = aboutElement.querySelector('.about-version-container')
       versionContainer.click()
-      expect(atom.clipboard.read()).toBe(atom.getVersion())
+      expect(soldat.clipboard.read()).toBe(soldat.getVersion())
     })
   })
 })
